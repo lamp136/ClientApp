@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<style type="text/css">
+			body{
+				background: white;
+			}
+			.mui-row{
+				text-align: center;
+				font-size:18px;
+				height:100px;		
+				background: white;
+			}
+			#repassword{
+				height:30px;
+				border-bottom:3px solid gray;
+				margin-left:10px;
+				margin-top:20px;
+			}
+			#rephone{
+				height:30px;
+				border-bottom:1px solid gray;
+				margin-top:20px;
+			}
+			#one label{
+				text-align: left;
+			}
+			#one .mui-input-row{
+				margin-top:20px;
+			}
+			#one .operation{
+				margin-top:50px;
+				height:60px;
+				text-align: center;
+			}
+			#one .operation button{
+				width:30%;
+				float:none;
+			}
+			
+			#two .operation{
+				margin-top:50px;
+				height:60px;
+				text-align: center;
+			}
+			#two .operation button{
+				width:30%;
+				float:none;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">设置</h1>
+		</header>
+		<div class="mui-content">
+		    
+		    <form class="mui-input-group" style="font-size:16px;">
+		    	<div class="mui-row">
+			    	<div class="mui-col-xs-6" id='repassword'>密码修改</div>
+			    	<div class="mui-col-xs-5" id='rephone'>手机号修改</div>
+			    </div>
+				<div id='one'>
+					<div class="mui-input-row">
+				        <label>原密码</label>
+				        <input type="text" id='oldpass' class="mui-input-clear" placeholder="请输入原密码">
+			    	</div>
+			    	<div class="mui-input-row">
+				        <label>新密码</label>
+				        <input type="password" id='pass' class="mui-input-password" placeholder="请输入密码">
+			    	</div>
+			    	<div class="mui-input-row">
+				        <label>确认密码</label>
+				        <input type="password" id='repass' class="mui-input-password" placeholder="请输入密码">
+			    	</div>
+				    <div class="mui-input-row operation">
+				        <button type="button" id='commit' class="mui-btn mui-btn-outlined" >确认修改</button>	
+			    	</div>			    	
+			    </div>
+			    <div id ='two' style="display:none;">
+			    	<div class="mui-input-row" style="height:60px;padding-top:20px;">
+				        <label>手机号</label>
+				    	<input type="text" name='phone' id='phone' class="mui-input-clear" placeholder="请输入手机号">
+				    </div>
+				    <div class="mui-input-row" style="height:60px;padding-top:20px;">
+				        <label>验证码</label>		     
+				        <button type="button" id='code-btn' class="mui-btn mui-btn-outlined" style="width:33%">获取验证码</button>	
+				        <input type="text" style="width:32%;" id='code' placeholder="请输入验证码">
+				    </div>
+				    <div class="mui-input-row operation">
+				        <button type="button" id='phone_commit' class="mui-btn mui-btn-outlined">确认修改</button>	
+			    	</div>	
+			    </div>
+			</form>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function(){
+				
+				function BuyId(id){
+					return document.getElementById(id);
+				}
+
+				mui('.mui-row').on('tap','div',function(){
+					var atr = this.getAttribute('id');
+					if(atr=='repassword'){
+						BuyId('rephone').style.cssText = 'border-bottom:1px solid gray';
+						BuyId('two').style.display = 'none';
+						BuyId('one').style.display = '';
+					}else{
+						BuyId('repassword').style.cssText = 'border-bottom:1px solid gray';
+						BuyId('one').style.display = 'none';
+						BuyId('two').style.display = '';
+					}
+					
+					this.style.cssText = 'border-bottom:3px solid gray';
+				});
+				
+				var self = plus.webview.currentWebview();
+				var uid = self.uid;
+				
+				//修改个人信息
+				BuyId('commit').addEventListener('tap',function(){
+					var pass = _trimStr(BuyId('pass').value),
+						oldpass = _trimStr(BuyId('oldpass').value),
+			            repass = _trimStr(BuyId('repass').value);
+			        if(oldpass == ''){
+				    	mui.toast('原密码不能为空',{ duration:'short', type:'div' });
+				    	return false;
+				    };
+				    if(pass == ''){
+				    	mui.toast('新密码不能为空',{ duration:'short', type:'div' });
+				    	return false;
+				    };
+				    if(repass==''){
+				    	mui.toast('再次确认密码',{ duration:'short', type:'div' });
+				    	return false;
+				    }
+				    if(pass != repass){
+				    	mui.toast('两次输入密码不一致',{ duration:'short', type:'div' });
+				    	return false;
+				    }
+				    
+				    //修改个人信息
+				    var btn = plus.nativeUI.showWaiting();
+				    var url_code = serverUrl+"/ClientApp/updateMessage";
+			    	mui.ajax(url_code,{
+				        data:{
+				        	pass:pass,				        	
+				        	oldpass:oldpass,
+				        	id:uid
+				        },
+				        dataType:'json',//服务器返回json格式数据
+				        type:'post',//HTTP请求类型 
+				        async: true,
+				        timeout:5000,//超时时间设置为5秒；                
+				        success:function(result){ 
+				        	btn.close();
+				        	if(result.flag==1){				        							    						    
+							    mui.alert(result.msg,'提示','确定',function(){
+							    	mui.back();
+							    });
+				        	}else{
+				        		mui.alert(result.msg,'提示','确定');
+				        	}			        	
+				        },
+				        error:function(xhr,type,errorThrown){
+				        	btn.close();
+				            //异常处理；
+				            mui.toast('连接超时!请重试',{ duration:'long', type:'div' }); 
+				            console.log(type); 
+				        }
+				    });
+				    
+				});
+				
+				//获取验证码
+				BuyId('code-btn').addEventListener('tap',function(){
+					var btn = this,
+				        reg = /^1((3\d)|(47)|(5[0-35-9])|(7[01789])|(8\d))\d{8}$/,
+				        mobile = _trimStr(BuyId('phone').value);		    
+				    if(mobile == ''){
+				    	mui.toast('手机号不能为空',{ duration:'short', type:'div' }); 
+				    }else{
+				    	if(!mobile.match(reg)){
+				    		mui.toast('手机号格式不正确',{ duration:'short', type:'div' });
+				    	}else{
+				    		//账号唯一性验证
+				    		var resuser = _checkUser(mobile);
+				    		if(resuser){
+				    			mui.toast('该账号已注册',{ duration:'short', type:'div' });
+				    			return false;
+				    		}
+				    		//检测验证码
+				    		var data = {
+				    			mobile: mobile,
+				                classify: 5,
+				                type: 11
+				    		}
+				    		var url = serverUrl+"/ClientApp/verifyCode";
+				    		_verifyCode(data,btn,url);
+				    	}
+				    	
+				    }		   
+				});
+				
+				//修改提交
+				BuyId('phone_commit').addEventListener('tap',function(){
+					var reg = /^1((3\d)|(47)|(5[0-35-9])|(7[01789])|(8\d))\d{8}$/,
+			        mobile = _trimStr(BuyId('phone').value),		      
+			        code = _trimStr(BuyId('code').value);
+				    //手机号验证
+				    if(mobile == ''){
+				    	mui.toast('手机号不能为空',{ duration:'short', type:'div' });
+				    	return false;
+				    }else{
+				    	if(!mobile.match(reg)){
+				    		mui.toast('手机号格式不正确',{ duration:'short', type:'div' });
+				    		return false;
+				    	}
+				    }				    
+				    //验证码验证	    
+				    if(code == ''){
+				    	mui.toast('验证码不能为空',{ duration:'short', type:'div' });
+				    	return false;
+				    }else{
+						var wd = plus.nativeUI.showWaiting();
+				    	var url_phone = serverUrl+"/ClientApp/updatePhone";
+				    	 mui.ajax(url_phone,{
+					        data:{
+					        	mobile:mobile,
+					        	code:code,
+					        	id:uid
+					        },
+					        dataType:'json',//服务器返回json格式数据
+					        type:'post',//HTTP请求类型 
+					        async: true,
+					        timeout:5000,//超时时间设置为5秒；                
+					        success:function(result){ 
+					        	wd.close();
+					        	if(result.flag==1){
+					        		mui.alert(result.msg,'提示','确定',function(){
+								    	mui.back();
+								    });			        		
+					        	}else{
+					        		mui.alert(result.msg,'提示','确定');
+					        	}
+					        },
+					        error:function(xhr,type,errorThrown){
+					        	wd.close();
+					            //异常处理；
+					            mui.toast('连接超时!请重试',{ duration:'long', type:'div' }); 
+					            console.log(type); 
+					        }
+					    });
+				    }
+				});
+				
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,285 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/mui.picker.css" rel="stylesheet" />
+		<link href="../css/mui.poppicker.css" rel="stylesheet" />
+		<style type="text/css">
+			#one label{
+				text-align: left;
+			}
+			#one .mui-input-row{
+				margin-top:20px;
+			}
+			#one .operation{
+				margin-top:50px;
+				height:60px;
+				margin-right:20px;
+			}
+			#one  button{
+				width:30%;
+				float:none;
+			}
+			.box-photo1{
+				width:45%;
+			
+				height: 150px;
+				/*text-align: center;*/
+				float:left;
+				margin-top:10px;
+				margin-left:10px ;
+				margin-bottom:80px;
+			}
+			.box-photo2{
+				float:right;
+				width:45%;	
+				height: 150px;	
+				margin-top:10px;
+				margin-bottom:80px;
+				margin-right:10px ;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title">用户注册</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group" style="font-size:16px;" >
+				<div id='one' >
+					<div class="box-photo1">
+						<img src="../img/photo1.png"/ flag='0' width="100%" height="100%">
+						<span>
+							手持身份证(正面)
+						</span>
+					</div>
+					
+					<div class="box-photo2">
+						<img src="../img/photo1.png"/ flag='0' width="100%" height="100%">
+						<span>
+							驾驶证正本
+						</span>
+					</div>
+					<span id="" style="clear: both;">
+						
+					</span>
+					<div class="mui-input-row">
+				        <label>姓&nbsp;&nbsp;&nbsp;&nbsp;名</label>
+				    	<input type="text" id='user_name' class="mui-input-clear" placeholder="请输入姓名">
+				    </div>
+				    <div class="mui-input-row">
+				        <label>性&nbsp;&nbsp;&nbsp;&nbsp;别</label> 		   	
+				    	<button type="button" id='showSexPicker' data-sex='' class="mui-btn mui-btn-outlined" >请选择..</button>	
+				    </div>
+				    <div class="mui-input-row">
+				        <label>证件号码</label>		     
+				        <input type="text" id='id_number' class="mui-input-clear" placeholder="证件号">
+				       
+				    </div>
+				    <div class="mui-input-row">
+				        <label>详细地址</label>
+				    	<input type="text" id='address' class="mui-input-clear" placeholder="请输入详细地址">
+				    </div>
+			    	<div class="mui-input-row">
+				        <label>服务站点</label>
+				        <button type="button" id='showSitePicker' data-site='' class="mui-btn mui-btn-outlined" style="width:50%">请选择..</button>	
+			    	</div>
+			    	
+				    <div class="mui-input-row operation">
+				        <button type="button" id='commit' style="float:right" class="mui-btn mui-btn-outlined" >下一步</button>	
+			    	</div>			    	
+			    </div>	
+			</form>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mui.picker.js"></script>
+		<script src="../js/mui.poppicker.js"></script>
+		<script src="../js/common.js"></script>
+		<!--<script src="../js/city.data.js" type="text/javascript" charset="utf-8"></script>-->			
+		<script type="text/javascript">
+			mui.init()
+			function BuyId(id) {
+                return document.getElementById(id);
+           	}
+			
+			//姓名长度限制
+            BuyId("user_name").addEventListener('input', function() {
+                var user = this.value;
+                if (user.length > 12) {
+                    this.value = user.substr(0, 12); 
+                }
+            });
+            //证件号长度限制
+            BuyId("id_number").addEventListener('input', function() {
+                var user = this.value;
+                if (user.length > 18) {
+                    this.value = user.substr(0, 18);
+                }
+            });
+			   
+			mui.ready(function() {
+				//普通示例
+				var userPicker = new mui.PopPicker();
+				userPicker.setData([{
+					value: '1',
+					text: '男'
+				}, {
+					value: '2',
+					text: '女'
+				}]);
+				var showUserPickerButton = BuyId('showSexPicker');			
+				showUserPickerButton.addEventListener('tap', function(event) {
+					userPicker.show(function(items) {
+						showUserPickerButton.innerText = items[0].text;
+						showUserPickerButton.setAttribute('data-sex',items[0].value);
+						//返回 false 可以阻止选择框的关闭
+						//return false;
+					});
+				}, false);
+				
+				//选择站点
+				var stetPicker = new mui.PopPicker();
+				var siteData = _serviceSite();
+				stetPicker.setData(siteData);
+				var showSitePickerButton = BuyId('showSitePicker');			
+				showSitePickerButton.addEventListener('tap', function(event) {
+					stetPicker.show(function(items) {
+						showSitePickerButton.innerText = items[0].text;
+						showSitePickerButton.setAttribute('data-site',items[0].value);						
+						//返回 false 可以阻止选择框的关闭
+						//return false;
+					});
+				}, false);
+				
+				
+				
+				//省市联动
+//				var cityPicker = new mui.PopPicker({
+//					layer: 2
+//				});
+//				var cityData = _province();
+//
+//				cityPicker.setData(cityData);  
+//				var showCityPickerButton = BuyId('showCityPicker');			
+//				showCityPickerButton.addEventListener('tap', function(event) {
+//					cityPicker.show(function(items) {
+//						showCityPickerButton.innerText = items[0].text +"    "+items[1].text;
+//						showCityPickerButton.setAttribute('data-city',items[0].value+"-"+items[1].value);
+//						//返回 false 可以阻止选择框的关闭
+//						//return false;
+//					});
+//				}, false);
+				
+           		
+           		//上传图片
+                mui('#one').on('tap','.box-photo1',function(){
+                	var imgObj = this.children[0];	 
+					page.imgUp(imgObj);  
+				})
+
+	            mui('#one').on('tap','.box-photo2',function(){
+	            	var imgObj = this.children[0];	            	
+					page.imgUp(imgObj); 
+					
+				})
+	            var page=null;  
+	            page={  
+	                imgUp:function(imgObj){  
+	                    var m=this;  
+	                    plus.nativeUI.actionSheet({cancel:"取消",buttons:[  
+	                        {title:"拍照"},  
+	                        {title:"从相册中选择"}  
+	                    ]}, function(e){//1 是拍照  2 从相册中选择  
+	                        switch(e.index){  
+	                            case 1:appendByCamera(imgObj);break;  
+	                            case 2:appendByGallery(imgObj);break;  
+	                        }  
+	                    });  
+	                }  
+	                //摄像头  
+	            }  
+	              
+	            // 拍照添加文件
+	            function appendByCamera(imgObj){
+	                plus.camera.getCamera().captureImage(function(e){
+	                    console.log(e);
+	                    plus.io.resolveLocalFileSystemURL(e, function(entry) { 
+	                    var path = entry.toLocalURL(); 
+	                    imgObj.src = path; 
+	                    imgObj.setAttribute('flag','1'); //标志位标志有图片上传
+	                    }, function(e) { 
+	                        mui.toast("读取拍照文件错误：" + e.message); 
+	                    }); 
+	    
+	                });    
+	            }
+	            // 从相册添加文件
+	            function appendByGallery(imgObj){
+	                plus.gallery.pick(function(path){
+	                    imgObj.src = path; 
+						imgObj.setAttribute('flag','1'); //标志位标志有图片上传
+	                });
+	            }
+	            
+	            //下一步
+	            BuyId('commit').addEventListener('tap',function(){
+	            	var data = localStorage.getItem('userData');
+	            	var name = BuyId('user_name').value,
+	            	    sex = BuyId('showSexPicker').getAttribute('data-sex'),
+	            	    IDNumber = BuyId('id_number').value,
+	            	    site = BuyId('showSitePicker').getAttribute('data-site'),
+	            	    siteName = BuyId('showSitePicker').innerHTML,
+	            	    address = BuyId('address').value,
+	            	    photo1 = document.getElementsByClassName('box-photo1')[0].children[0],
+	            	    photo2 = document.getElementsByClassName('box-photo2')[0].children[0];
+	            	    
+	            	    if(name == ''){
+	            	    	mui.toast('请填写姓名',{ duration:'short', type:'div' });
+			    			return false;
+	            	    }
+	            	    if(sex == ''){
+	            	    	mui.toast('请填写性别',{ duration:'short', type:'div' });
+			    			return false;
+	            	    }
+	            	    if(IDNumber == ''){
+	            	    	mui.toast('请填写证件号',{ duration:'short', type:'div' });
+			    			return false;
+	            	    }
+	            	    if(site == ''){
+	            	    	mui.toast('请填写服务站点',{ duration:'short', type:'div' });
+			    			return false;
+	            	    }
+	            	    if(photo1.getAttribute('flag') == '0' || photo2.getAttribute('flag') == '0'){
+	            	    	mui.toast('请上传照片',{ duration:'short', type:'div' });
+			    			return false;
+	            	    }
+	            	    
+	            	if(data){
+	            		var list = JSON.parse(data);
+	            		    list['name'] = name;
+	            		    list['sex'] = sex;
+	            		    list['id_number'] = IDNumber;
+	            		    list['site_id'] = site;
+	            		    list['address'] = address;
+	            		    list['site_name'] = siteName;
+	            		    list['id_card'] = photo1.src;
+	            		    list['driving_licence'] = photo2.src;
+	            		var res = JSON.stringify(list);
+	            		localStorage.setItem('userData',res);
+	            		
+	            		mui.openWindow({
+                            url: 'registerCar.html',
+                            id: 'registerCar.html',
+                        });
+	            	}															
+	            });	  				
+			});
+		</script>
+	</body>
+
+</html>

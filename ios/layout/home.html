@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="../css/base.css" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<script type="text/javascript" src="http://api.map.baidu.com/getscript?v=2.0&ak=cNxA6ctoGgP8i4MD72izWN3aTDGoGWnh&services=&t=20170717103214"></script>
+	 	<script type="text/javascript" src="http://developer.baidu.com/map/jsdemo/demo/convertor.js"></script>	
+	 	<style type="text/css">
+	 		.personal_data ul li{
+	 			border-bottom:1px solid whitesmoke;
+	 		}
+	 		.body{
+	 			letter-spacing:10px;
+	 		}
+	 		#alt{
+	 			border-radius:13px;
+	 			width: 80%;
+	 			font-size: 14px;
+	 			text-align: center;
+	 			background-color: white;	 			
+	 		}
+	 		#alt button{
+	 			border:none;
+	 			width:49%;
+	 			height: 40px;
+	 			color: #007AFF;
+	 		}
+	 		#alt_exit{
+	 			border-radius:0 0 0 13px;
+	 		}
+	 		#alt_comit{
+	 			border-radius:0 0 13px 0;
+	 		}
+	 		#alt li{
+	 			margin-bottom:10px;
+	 		}
+	 		#msg_bottom{
+	 			width:90%;
+	 			background-color: white;
+	 			text-align: center;
+	 			font-size:18px;
+	 			padding-top:10px;
+	 		}
+	 		#msg_bottom button{
+	 			width:49%; 	
+	 			background-color: blue;
+	 			color:white;		
+	 		}
+	 		#msg_bottom li{
+	 			margin-top:10px;
+	 		}
+	 		#msg_top{
+	 			width:90%;
+	 			background-color: white;
+	 			text-align: center;
+	 			font-size:18px;
+	 			height:60px;
+	 		}
+	 		#start_trip{
+	 			line-height:60px;
+	 			height:100%;
+	 			float:left;
+	 			width:20%;
+	 			color:white;
+	 			background-color:#747C7E;
+	 		}
+	 		#car_msg,#user_msg{
+	 			float:left;
+	 			width:40%;
+	 			line-height:60px;
+	 		} 
+	 		
+	 	</style>
+	</head>
+	<body>
+	<!--头部开始-->
+	<header>
+      <div class="top_nav"> 
+      	<a class="header_left icon_personal"></a>
+        <span class="sp_nav"></span>
+        <a class="hear_right icon_up" tag='0'></a>
+      </div>
+      <div class="top_as"></div>
+    </header>
+    <!--头部结束-->
+    
+    <!--内容开始-->
+    <div class="div_map" id='allmap'> 	
+    </div>
+	<!--订单提醒,弹框控件-->
+	<div id='alt' style="display:none;" order-id=''>
+		<h3 style="margin-bottom:20px;">订单提醒</h3>
+		<ul style="padding:10px;">
+			<li style="font-size:18px;"><span id='riding_address'>光明小区</span>--<span id='store_name'>九公山公墓</span></li>
+			<li id='time'>2017-10-08       出发</li>
+			<li id='user_name'>李四        3人</li>			
+		</ul>
+		<div style="width:100%;border-top:1px solid #E1E1E1;">
+			<button id='alt_exit' style="border-right:1px solid #E1E1E1;">放弃</button>
+			<button id='alt_comit'>接单</button>
+		</div>	
+	</div>
+	<!--订单信息,底部控件-->
+	<div id="msg_bottom" style="display:none;">
+		<ul>
+			<li id='bottom_route' style="font-weight:600;font-size:20px;">光明院一区--天山陵园</li>
+			<li><span id='bottom_appointer'>李四</span> &nbsp;&nbsp;&nbsp;<span id="bottom_num">3人</span> &nbsp;&nbsp;&nbsp;<span id='bottom_time'>9:30出发</span></li>
+			<li>
+				<button>导航</button>
+				<button id='user_phone'>电话</button>
+			</li>
+		</ul>
+	</div>
+	<!--司机信息,顶部控件-->
+	<div id="msg_top" style="display:none;">
+		<div id="user_msg">
+			<span class="mui-icon iconfont icon-ren" style="font-size:20px;"></span>
+			<span id='driver_name'>谢冬山</span>		
+		</div>
+		<div id="car_msg">
+			<span class="mui-icon iconfont icon-che"></span>
+			<span id='total_km'>200KM</span>
+		</div>
+		<div id='start_trip'>出发</div>
+	</div>
+	<!--内容结束-->
+	<!--模太框-->
+	<div class="div_model">
+		<div class="skid_bar">
+			<div class="user_portrait">
+				<span class="icon_portrait"><img src="../img/icon_portrait.png"></span>
+				<span class="user_mame">张梅梅</span>
+			</div>
+			<div class="personal_data">
+				<ul>
+					<li id='user'>
+						<a>
+						<span class="icon icon_address"></span>
+						<span>个人信息</span>
+						</a>
+					</li>
+					<li>
+						<a>
+						<span class="icon icon_wallet"></span>
+						<span>我的订单</span>
+						</a>
+					</li>
+					<li id='setting'>
+						<a>
+						<span class="icon icon_set"></span>
+						<span>设置</span>
+						</a>
+					</li>
+					<li id='custom_service'>
+						<a>
+						<span class="icon icon_service"></span>
+						<span>客服</span>
+						</a>
+					</li>
+					<li id='gout'>
+						<a>			
+						<span class="icon icon_gout"></span>
+						<span>退出登录</span>
+						</a>
+					</li>	
+				</ul>
+			</div>
+		</div>
+		<div class="model_none"></div>
+	</div>
+	
+	<script src="../js/mui.min.js"></script>
+	<script type="text/javascript" src="../js/jquery-1.11.3.min.js" ></script>
+	<script type="text/javascript" src="../js/index.js" ></script>
+
+
+	
+	<script type="text/javascript">		
+		// 百度地图API功能
+		mui.init();
+		mui.plusReady(function(){
+			function BuyId(id){
+				return document.getElementById(id);
+			}
+							
+			var map = new BMap.Map("allmap"); //创建地图 
+		    map.centerAndZoom(new BMap.Point(116.4035,39.915),15); 
+		    
+		    // 定义一个控件类,弹框
+			function ZoomControl(){ 
+			    // 设置默认停靠位置和偏移量  
+			    this.defaultAnchor = BMAP_ANCHOR_BOTTOM_LEFT;  
+			    this.defaultOffset = new BMap.Size(40, 300);			    
+			}
+			ZoomControl.prototype = new BMap.Control();
+			ZoomControl.prototype.initialize = function(map){ 
+				var div = BuyId('alt');  
+			    // 添加DOM元素到地图中  
+			    map.getContainer().appendChild(div);  
+			    // 将DOM元素返回  
+			    return div;			    
+			}	
+			
+			// 定义一个控件类 底部信息
+			function msgBottControl(){ 
+			    // 设置默认停靠位置和偏移量  
+			    this.defaultAnchor = BMAP_ANCHOR_BOTTOM_LEFT;  
+			    this.defaultOffset = new BMap.Size(20, 60);			    
+			}
+			msgBottControl.prototype = new BMap.Control();
+			msgBottControl.prototype.initialize = function(map){ 
+				var div = BuyId('msg_bottom');  
+			    // 添加DOM元素到地图中  
+			    map.getContainer().appendChild(div);  
+			    // 将DOM元素返回  
+			    return div;			    
+			}	
+			
+			// 定义一个控件类 顶部信息
+			function msgTopControl(){ 
+			    // 设置默认停靠位置和偏移量  
+			    this.defaultAnchor = BMAP_ANCHOR_BOTTOM_LEFT;  
+			    this.defaultOffset = new BMap.Size(20, 560);			    
+			}
+			msgTopControl.prototype = new BMap.Control();
+			msgTopControl.prototype.initialize = function(map){ 
+				var div = BuyId('msg_top');  
+			    // 添加DOM元素到地图中  
+			    map.getContainer().appendChild(div);  
+			    // 将DOM元素返回  
+			    return div;			    
+			}
+			
+			getleave();
+			function getleave(){ 
+				//获取定位
+				plus.geolocation.getCurrentPosition(translatePoint,function(e){
+			        mui.toast("获取位置失败!");
+			   });
+			} 
+//			setInterval(getleave, 5000);
+		    
+		    //获得定位之后的回调函数
+		    function translatePoint(position){
+			    var currentLon = position.coords.longitude; //经度
+			    var currentLat = position.coords.latitude;  //纬度
+			    var gpsPoint = new BMap.Point(currentLon,currentLat);			 
+			    BMap.Convertor.translate(gpsPoint,0,initMap); //坐标转换
+			}
+		    //坐标转换后的回调函数
+		    var preMarker = '';
+			function initMap(point){
+				var Marker = new BMap.Marker(point);
+				map.removeOverlay(preMarker); 
+				map.addOverlay(Marker);	
+			    map.setCenter(point);
+			    preMarker=Marker;  
+			} 
+			
+			//个人信息
+			var user = plus.storage.getItem('USER_MSG');
+			if(user){
+				var userData = JSON.parse(user);
+				document.getElementsByClassName('user_mame')[0].innerHTML = userData.name;
+			}
+			
+			BuyId('user').addEventListener('tap',function(){
+				mui.openWindow({
+					url: 'userCenter.html',
+	                id: 'userCenter.html',
+				})
+				var obj = document.getElementsByClassName("div_model")[0];
+				obj.style.display = 'none';
+			});			
+			
+			//设置
+			BuyId('setting').addEventListener('tap',function(){
+				mui.openWindow({
+					url:'setting.html',
+					id:'setting.html',
+					extras:{
+				        uid:userData.id,					        
+				    }
+				})
+			});
+			
+			//客服热线
+			BuyId('custom_service').addEventListener('tap',function(){
+				mui.confirm('客服热线:400-618-9191','',['取消','呼叫'],function(e){
+					if(e.index == 1){
+						plus.device.dial('400-618-9191', true );			
+					}
+				})				
+			});
+
+			//点击上线/下线
+			if(userData.is_online == 1){
+				document.getElementsByClassName('hear_right')[0].setAttribute('class','hear_right icon_down');
+				document.getElementsByClassName('hear_right')[0].setAttribute('tag','1');
+			}
+			document.getElementsByClassName('hear_right')[0].addEventListener('tap',function(){
+				var thi = this;
+				var tag = this.getAttribute('tag');
+				var img = '';
+				if(tag ==1){
+					tag = 0;
+					img = 'icon_up';
+				}else{
+					tag = 1;
+					img = 'icon_down';
+				}
+
+				var wd = plus.nativeUI.showWaiting();
+				var url = serverUrl + "/ClientApp/changeOnline";
+                mui.ajax(url, {
+                    data: {
+                    	id:userData.id,
+                    	online:tag
+                    },
+                    dataType: 'json', //服务器返回json格式数据
+                    type: 'post', //HTTP请求类型
+                    async: true,
+                    timeout: 5000, //超时时间设置为5秒；
+                    success: function(data) { 
+                    	wd.close();
+                        if (data.flag == 1) {                           
+                            thi.setAttribute('class','hear_right'+' '+img); 
+                            thi.setAttribute('tag',tag);  
+                            userData['is_online'] = tag;
+							plus.storage.setItem('USER_MSG',JSON.stringify(userData));
+                        } else {
+                            mui.alert(data.msg);
+                        }
+                    },
+                    error: function(xhr, type, errorThrown) {
+                    	wd.close();
+                        //异常处理；
+                        console.log(type);
+                        mui.alert('连接失败,请检查你的网络!');
+                    }
+                });
+			});
+			
+			//退出登录
+			BuyId('gout').addEventListener('tap',function(){
+				mui.confirm('是否退出登录','提示',['确认','取消'],function(e){
+					if(e.index == 0){
+						plus.storage.removeItem("USER_MSG");
+						plus.storage.clear()
+						mui.back();
+					}
+				})
+			});
+									
+			//监听网络变化
+			document.addEventListener("netchange", wainshow, false);
+			function wainshow() {
+				if (plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
+					mui.toast("网络异常，请检查网络设置！");				 
+				} else {
+				 	location.reload();
+				}
+			}
+			
+			showReservationMsg(); //调用底部预约信息控件
+			routeCommon();        //调用线路图
+					
+			//监听信息推送点击事件
+			plus.push.addEventListener( "click", function ( msg ) {				
+
+			}, false);
+			
+ 			//监听信息推送事件
+			plus.push.addEventListener('receive',function(e){
+				//创建本地模板
+				var optio = "{title:'消息',sound:system,cover:false}"; 	
+				plus.push.createMessage(e.content,e.payload,optio);
+				plus.push.setAutoNotification(true);
+				
+				//创建地图控件
+				var payObj = JSON.parse(e.payload);
+				plus.storage.setItem('push',e.payload);  //推送信息存入缓存,防止页面刷新数据丢失
+                BuyId('store_name').innerHTML = payObj.store_name;
+                BuyId('riding_address').innerHTML = payObj.riding_address;              
+                BuyId('time').innerHTML = payObj.arrive_time+'出发';
+                BuyId('user_name').innerHTML = payObj.appointer+'  '+payObj.rider_number+'人';
+                BuyId('alt').setAttribute('order-id',payObj.order_id);
+                
+               // 创建订单提醒控件实例  
+				var myZoomCtrl = new ZoomControl();    
+				map.addControl(myZoomCtrl);
+				BuyId('alt').style.display = 'block';
+			}, false);
+			
+							
+			//接单
+			BuyId('alt_comit').addEventListener('tap',function(){			  
+				BuyId('alt').style.display = "none";
+				var orderId = BuyId('alt').getAttribute('order-id');								
+				
+				var url = serverUrl + "/ClientApp/upServerStatus";
+				mui.ajax(url,{
+					data:{orderId:orderId},
+					dataType:'json',
+					type:'post',
+					async: true,
+					timeout: 5000, //超时时间设置为5秒；
+					success: function(e){
+						if(e.flag==1){
+							plus.storage.setItem('serverStatus','1'); //接单后的标记,防止刷新后数据丢失
+							showReservationMsg();
+							routeCommon();	
+						}else{
+							plus.storage.removeItem("push");
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+                        //异常处理；
+                        console.log(type);
+                        mui.alert('连接失败,请检查你的网络!');
+                    }
+				});								
+			});
+			
+			//拨打电话
+			BuyId('user_phone').addEventListener('tap',function(){
+				var push = plus.storage.getItem('push');
+				if(push){
+					var payObj = JSON.parse(push);
+					mui.confirm('乘客电话:'+payObj.rider_phone,'',['取消','呼叫'],function(e){
+						if(e.index == 1){
+							plus.device.dial(payObj.rider_phone, true );			
+						}
+					})		
+				}
+			});
+			
+			//预约车辆的信息
+			function showReservationMsg(){
+				var push = plus.storage.getItem('push');
+				if(push){
+					var payObj = JSON.parse(push);
+					BuyId('bottom_appointer').innerHTML = payObj.appointer;
+					BuyId('bottom_num').innerHTML = payObj.rider_number+'人';
+					BuyId('bottom_time').innerHTML = payObj.arrive_time+'出发';
+					BuyId('bottom_route').innerHTML = payObj.riding_address+'--'+payObj.store_name;
+					//顶部信息
+					BuyId('driver_name').innerHTML = userData.name;
+					BuyId('total_km').innerHTML = '200KM';
+					
+					// 创建底部信息控件实例  
+					var msgBottomCtrl = new msgBottControl();    
+					map.addControl(msgBottomCtrl);
+					
+					// 创建顶部信息控件实例  
+					var msgtopmCtrl = new msgTopControl();   
+					map.addControl(msgtopmCtrl);
+					BuyId('msg_bottom').style.display = 'block';
+					BuyId('msg_top').style.display = 'block';	
+
+				}
+			}
+			
+			//线路图公共方法
+			function routeCommon(){
+				var push = plus.storage.getItem('push');
+				var serSta = plus.storage.getItem('serverStatus');
+				if(serSta && push){
+					var pushObj = JSON.parse(push);
+					if(serSta == 1){
+						//调用地图路线图
+						daohang(pushObj.riding_address,pushObj.store_name);
+					}
+				}			
+			}
+			
+			//拒接单
+			BuyId('alt_exit').addEventListener('tap',function(){
+				BuyId('alt').style.display = "none";
+				plus.storage.removeItem("push");
+			});
+															
+			// 百度地图路线功能
+			function daohang(start,end){					
+				var route = 'BMAP_DRIVING_POLICY_LEAST_DISTANCE';				
+				map.clearOverlays(); 			
+				var driving = new BMap.DrivingRoute(map, {renderOptions:{map: map, autoViewport: true},policy: route});
+				driving.search(start,end);			
+			}
+			
+		});
+	</script>
+	</body>
+</html>

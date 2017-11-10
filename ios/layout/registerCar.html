@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../css/mui.poppicker.css" rel="stylesheet" />
+		<style type="text/css">
+			#one label{
+				text-align: left;
+			}
+			#one .mui-input-row{
+				margin-top:20px;
+			}
+			#one .operation{
+				margin-top:50px;
+				height:60px;
+				margin-right:20px;
+			}
+			#one  button{
+				width:30%;
+				float:none;
+			}
+			.box-photo1{
+				width:45%;
+			
+				height: 150px;
+				/*text-align: center;*/
+				float:left;
+				margin-top:10px;
+				margin-left:10px ;
+				margin-bottom:80px;
+			}
+			.box-photo2{
+				float:right;
+				width:45%;	
+				height: 150px;	
+				margin-top:10px;
+				margin-bottom:80px;
+				margin-right:10px ;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title">车辆信息</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group" style="font-size:16px;" >
+				<div id='one' >
+					<div class="box-photo1">
+						<img src="../img/photo1.png"/ flag='0' width="100%" height="100%">
+						<span>
+							行驶证正本
+						</span>
+					</div>
+					
+					<div class="box-photo2">
+						<img src="../img/photo1.png"/ flag='0' width="100%" height="100%">
+						<span>
+							车辆正面
+						</span>
+					</div>
+
+					<div class="mui-input-row">
+				        <label>车牌号</label>
+				    	<input type="text" id='plate_number' class="mui-input-clear" placeholder="车牌号">
+				    </div>
+				    <div class="mui-input-row">
+				        <label>车架号</label>		   	
+				    	<input type="text" id='vin' class="mui-input-clear" placeholder="车架号">
+				    </div>
+				    <div class="mui-input-row">
+				        <label>发动机号</label>		     
+				        <input type="text" id='engine' class="mui-input-clear" placeholder="发动机号">
+				       
+				    </div>
+			    	<div class="mui-input-row">
+				        <label>初次领证</label>				        
+				        <button type="button" value='' id='receive_time' data-options='{"type":"date","beginYear":2014,"endYear":2025}' class="mui-btn mui-btn-outlined" style="width:50%">请选择..</button>	
+			    	</div>
+			    	
+				    <div class="mui-input-row operation">
+				        <button type="button" id='commit' style="float:right" class="mui-btn mui-btn-outlined" >注册</button>	
+			    	</div>			    	
+			    </div>	
+			</form>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mui.picker.min.js"></script>
+		<script src="../js/mui.picker.js"></script>
+		<script src="../js/mui.poppicker.js"></script>
+		<script src="../js/city.data.js" type="text/javascript" charset="utf-8"></script>			
+		<script type="text/javascript">
+			mui.init()
+			function BuyId(id) {
+                return document.getElementById(id);
+           	}
+						   
+			mui.ready(function() {
+
+           		//上传图片
+                mui('#one').on('tap','.box-photo1',function(){
+                	var imgObj = this.children[0];	 
+					page.imgUp(imgObj);  
+				})
+
+	            mui('#one').on('tap','.box-photo2',function(){
+	            	var imgObj = this.children[0];	            	
+					page.imgUp(imgObj); 
+					
+				})
+	            var page=null;  
+	            page={  
+	                imgUp:function(imgObj){  
+	                    var m=this;  
+	                    plus.nativeUI.actionSheet({cancel:"取消",buttons:[  
+	                        {title:"拍照"},  
+	                        {title:"从相册中选择"}  
+	                    ]}, function(e){//1 是拍照  2 从相册中选择  
+	                        switch(e.index){  
+	                            case 1:appendByCamera(imgObj);break;  
+	                            case 2:appendByGallery(imgObj);break;  
+	                        }  
+	                    });  
+	                }  
+	                //摄像头  
+	            }  
+	              
+	            // 拍照添加文件
+	            function appendByCamera(imgObj){
+	                plus.camera.getCamera().captureImage(function(e){
+	                    console.log(e);
+	                    plus.io.resolveLocalFileSystemURL(e, function(entry) { 
+	                    var path = entry.toLocalURL(); 
+	                    imgObj.src = path; 
+	                    imgObj.setAttribute('flag','1'); //标志位标志有图片上传
+	                    }, function(e) { 
+	                        mui.toast("读取拍照文件错误：" + e.message); 
+	                    }); 
+	    
+	                });    
+	            }
+	            // 从相册添加文件
+	            function appendByGallery(imgObj){
+	                plus.gallery.pick(function(path){
+	                    imgObj.src = path; 
+						imgObj.setAttribute('flag','1'); //标志位标志有图片上传
+	                });
+	            };
+	            
+		        //时间选择器               
+                (function($) {                   
+                    var btn = BuyId('receive_time');                   
+                    btn.addEventListener('tap', function() {
+                            var optionsJson = this.getAttribute('data-options');
+                            var options = JSON.parse(optionsJson);
+                            
+                            var selectValue = this.value;
+
+                            var picker = new $.DtPicker(options);
+                            picker.setSelectedValue(selectValue); 
+                            
+                            picker.show(function(rs) {
+
+                                btn.innerText = rs.text;
+                                btn.value = rs.text;
+            
+                                picker.dispose();
+                            });
+                        }, false);
+                })(mui);
+
+	            //下一步
+	            BuyId('commit').addEventListener('tap',function(){
+	            	var user_data = localStorage.getItem('userData');
+	            	var plate_number = BuyId('plate_number').value,
+	            	    vin = BuyId('vin').value,
+	            	    engine = BuyId('engine').value,
+	            	    receive_time = BuyId('receive_time').value;
+	            	    photo1 = document.getElementsByClassName('box-photo1')[0].children[0],
+	            	    photo2 = document.getElementsByClassName('box-photo2')[0].children[0];
+	            	    
+            	    if(plate_number == ''){
+            	    	mui.toast('请填写车牌号',{ duration:'short', type:'div' });
+		    			return false;
+            	    }
+            	    if(vin == ''){
+            	    	mui.toast('请填写车架号',{ duration:'short', type:'div' });
+		    			return false;
+            	    }
+            	    if(engine == ''){
+            	    	mui.toast('请填写发动机号',{ duration:'short', type:'div' });
+		    			return false;
+            	    }
+            	    if(photo1.getAttribute('flag') == '0' || photo2.getAttribute('flag') == '0'){
+            	    	mui.toast('请上传照片',{ duration:'short', type:'div' });
+		    			return false;
+            	    }
+	            	
+	            	//车辆信息
+	            	var car_data = {
+	            		'plate_number':plate_number,
+	            		'vin':vin,
+	            		'engine':engine,
+	            		'receive_time':receive_time
+	            	}
+	            	
+	            	//司机信息
+	            	var user_data = localStorage.getItem('userData');
+	            	var user_data_obj = JSON.parse(user_data);					
+
+	            	var server = serverUrl+"/ClientApp/register";
+	                var wt=plus.nativeUI.showWaiting();
+	                var task=plus.uploader.createUpload(server,
+	                    {method:"POST"},
+	                    function(t,status){ //上传完成                  	  
+	                        if(status==200){
+	                            wt.close(); //关闭等待提示按钮
+	                            mui.alert('注册成功!','提示','确定',function(){ 
+	                            	//清除注册用户信息页的缓存和关闭注册所有页面
+	                            	plus.storage.removeItem("userData");
+	                            	var register=plus.webview.getWebviewById('register.html');
+            						var registerUser = plus.webview.getWebviewById('registerUser.html');
+            						plus.webview.close(register, 'none');
+            						plus.webview.close(registerUser, 'none');
+							    	mui.back();
+							    	
+							    });
+	                        }else{
+	                            mui.alert("上传失败");
+	                            wt.close();//关闭等待提示按钮
+	                        }
+	                    }
+	                );
+	                
+	                var photo1 = document.getElementsByClassName('box-photo1')[0].children[0];
+	                var photo2 = document.getElementsByClassName('box-photo2')[0].children[0];
+	                //添加其他参数
+	                task.addData("car_data",JSON.stringify(car_data));
+	                task.addData("user_data",user_data);
+	                task.addFile(photo1.src,{key:"vtl_img"});
+	                task.addFile(photo2.src,{key:"car_img"});
+	                task.addFile(user_data_obj.driving_licence,{key:"driving_img"});
+	                task.addFile(user_data_obj.id_card,{key:"id_card_img"});
+	                task.start();
+	            	             	
+	            });
+	  				
+			});
+		</script>
+	</body>
+</html>

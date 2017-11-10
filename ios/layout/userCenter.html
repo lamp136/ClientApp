@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/mui.picker.css" rel="stylesheet" />
+		<link href="../css/mui.poppicker.css" rel="stylesheet" />
+		<style type="text/css">
+			#one label{
+				text-align: left;
+			}
+			#one .mui-input-row{
+				margin-top:20px;
+			}
+			#one .operation{
+				margin-top:50px;
+				height:60px;
+				margin-right:20px;
+			}
+			#one  button{
+				width:30%;
+				float:none;
+			}
+			.box-photo1{
+				width:45%;
+			
+				height: 150px;
+				/*text-align: center;*/
+				float:left;
+				margin-top:10px;
+				margin-left:10px ;
+				margin-bottom:80px;
+			}
+			.box-photo2{
+				float:right;
+				width:45%;	
+				height: 150px;	
+				margin-top:10px;
+				margin-bottom:80px;
+				margin-right:10px ;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">			
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>	
+		    <h1 class="mui-title">个人信息</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group" style="font-size:16px;" >
+				<div id='one' >
+					<div class="box-photo1">
+						<img src="../img/photo1.png"/ flag='0' width="100%" height="100%">
+						<span>
+							手持身份证(正面)
+						</span>
+					</div>
+					
+					<div class="box-photo2">
+						<img src="../img/photo1.png"/ flag='0' width="100%" height="100%">
+						<span>
+							驾驶证正本
+						</span>
+					</div>
+					<span id="" style="clear: both;">
+						
+					</span>
+					<div class="mui-input-row">
+				        <label>姓&nbsp;&nbsp;&nbsp;&nbsp;名</label>
+				    	<input type="text" id='user_name' class="mui-input-clear" disabled="true" >
+				    </div>
+				    <div class="mui-input-row">
+				        <label>性&nbsp;&nbsp;&nbsp;&nbsp;别</label>		   	
+				    	<button type="button" id='showSexPicker' disabled="true" data-sex='' class="mui-btn mui-btn-outlined" >请选择..</button>	
+				    </div>
+				    <div class="mui-input-row">
+				        <label>证件号码</label>		     
+				        <input type="text" id='id_number' disabled="true" class="mui-input-clear">	       
+				    </div>
+				    <div class="mui-input-row">
+				        <label>详细地址</label>
+				    	<input type="text" id='address' disabled="true" class="mui-input-clear">
+				    </div>
+			    	<div class="mui-input-row">
+				        <label>服务站点</label>
+				        <button type="button" id='showSitePicker' disabled="true" data-site='' class="mui-btn mui-btn-outlined" style="width:50%"></button>	
+			    	</div>
+			    	
+				    <div class="mui-input-row operation">
+				        <button type="button" id='commit' style="float:right" class="mui-btn mui-btn-outlined" >下一步</button>	
+			    	</div>			    	
+			    </div>	
+			</form>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mui.picker.js"></script>
+		<script src="../js/mui.poppicker.js"></script>
+		<script src="../js/common.js"></script>
+		<!--<script src="../js/city.data.js" type="text/javascript" charset="utf-8"></script>-->			
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function(){
+							
+				function BuyId(id) {
+	                return document.getElementById(id);
+	           	}
+				var user = plus.storage.getItem('USER_MSG');
+				
+				if(user){
+					var userId = JSON.parse(user).id;
+					var url = serverUrl + "/ClientApp/findUserMessage";
+					var carData = '';
+					var wd = plus.nativeUI.showWaiting();
+	                mui.ajax(url, {
+	                    data: {
+	                        id: userId,                       
+	                    },
+	                    dataType: 'json', //服务器返回json格式数据
+	                    type: 'post', //HTTP请求类型
+	                    async: true,
+	                    timeout: 5000, //超时时间设置为5秒；
+	                    success: function(data) { 
+	                    	wd.close(); //先关闭等待的对话框    
+	                     	if(data.flag==1){
+	                     		var sex = '女';
+	                     		var userData = data.userData;
+	                     		document.getElementsByClassName('box-photo1')[0].children[0].src = imageUrl+userData.id_card;
+	                     		document.getElementsByClassName('box-photo2')[0].children[0].src = imageUrl+userData.driving_licence;
+	                     		if(userData.sex == 1){
+	                     			sex = '男';
+	                     		}
+	                     		
+	                     		BuyId('user_name').value = userData.name;
+	                     		BuyId('id_number').value = userData.id_number;
+	                     		BuyId('showSexPicker').innerHTML = sex;
+	                     		BuyId('address').value = userData.address;
+	                     		BuyId('showSitePicker').innerHTML = userData.site_name;
+	                     		carData = data.carData;
+	                     	}
+	                    },
+	                    error: function(xhr, type, errorThrown) {  
+	                    	wd.close(); //先关闭等待的对话框    
+	                        //异常处理；
+	                        console.log(type);
+	                        mui.alert('连接失败,请检查你的网络!');
+	                    }
+	                });
+	                
+	                BuyId('commit').addEventListener('tap',function(){
+	                	mui.openWindow({
+	                		url: 'carCenter.html',
+		                	id: 'carCenter.html',
+		                	extras:{
+						        carData:carData,					        
+						    }
+	                	})
+	                });
+				}
+			})
+		           
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<style type="text/css">
+			#one label{
+				text-align: left;
+			}
+			#one .mui-input-row{
+				margin-top:20px;
+			}
+			#one .operation{
+				margin-top:50px;
+				height:60px;
+				text-align: center;
+			}
+			#one .operation button{
+				width:30%;
+				float:none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">用户注册</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group" style="font-size:16px;">
+				<div id='one'>
+				    <div class="mui-input-row" style="height:60px;padding-top:20px;">
+				        <label>手机号</label>
+				    	<input type="text" name='phone' id='phone' class="mui-input-clear" placeholder="请输入手机号">
+				    </div>
+				    <div class="mui-input-row">
+				        <label>验证码</label>		     
+				        <button type="button" id='code-btn' class="mui-btn mui-btn-outlined" style="width:33%">获取验证码</button>	
+				        <input type="text" style="width:32%;" id='code' placeholder="请输入验证码">
+				    </div>
+			    	<div class="mui-input-row">
+				        <label>密&nbsp;&nbsp;&nbsp;&nbsp;码</label>
+				        <input type="password" id='pass' class="mui-input-password" placeholder="请输入密码">
+			    	</div>
+			    	<div class="mui-input-row">
+				        <label>确认密码</label>
+				        <input type="password" id='repass' class="mui-input-password" placeholder="请输入密码">
+			    	</div>
+				    <div class="mui-input-row operation">
+				        <button type="button" class="mui-btn mui-btn-outlined" style="margin-right:20px;">取消</button>	
+				        <button type="button" id='commit' class="mui-btn mui-btn-outlined" >下一步</button>	
+			    	</div>			    	
+			    </div>	
+			</form>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common.js"></script>		
+
+		<script type="text/javascript">			
+			mui.init();
+			function BuyId(id) {
+                return document.getElementById(id);
+           	}
+			
+			mui.plusReady(function() {
+			
+			//获取验证码
+			BuyId('code-btn').addEventListener('tap',function(){
+				var btn = this,
+			        reg = /^1((3\d)|(47)|(5[0-35-9])|(7[01789])|(8\d))\d{8}$/,
+			        mobile = _trimStr(BuyId('phone').value);		    
+			    if(mobile == ''){
+			    	mui.toast('手机号不能为空',{ duration:'short', type:'div' }); 
+			    }else{
+			    	if(!mobile.match(reg)){
+			    		mui.toast('手机号格式不正确',{ duration:'short', type:'div' });
+			    	}else{
+			    		//账号唯一性验证
+			    		var resuser = _checkUser(mobile);
+			    		if(resuser){
+			    			mui.toast('该账号已注册',{ duration:'short', type:'div' });
+			    			return false;
+			    		}
+			    		//检测验证码
+			    		var data = {
+			    			mobile: mobile,
+			                classify: 5,
+			                type: 11
+			    		}
+			    		var url = serverUrl+"/ClientApp/verifyCode";
+			    		_verifyCode(data,btn,url);
+			    	}
+			    	
+			    }		   
+			});
+			
+			//下一步
+			BuyId('commit').addEventListener('tap',function(){
+				var reg = /^1((3\d)|(47)|(5[0-35-9])|(7[01789])|(8\d))\d{8}$/,
+			        mobile = _trimStr(BuyId('phone').value),
+			        pass = _trimStr(BuyId('pass').value),
+			        repass = _trimStr(BuyId('repass').value),
+			        code = _trimStr(BuyId('code').value);
+			    //手机号验证
+			    if(mobile == ''){
+			    	mui.toast('手机号不能为空',{ duration:'short', type:'div' });
+			    	return false;
+			    }else{
+			    	if(!mobile.match(reg)){
+			    		mui.toast('手机号格式不正确',{ duration:'short', type:'div' });
+			    		return false;
+			    	}
+			    }
+			    
+			    //密码验证
+			    if(pass == ''){
+			    	mui.toast('密码不能为空',{ duration:'short', type:'div' });
+			    	return false;
+			    };
+			    if(repass == ''){
+			    	mui.toast('再次确认密码',{ duration:'short', type:'div' });
+			    	return false;
+			    };
+			    if(pass != repass){
+			    	mui.toast('两次输入密码不一致',{ duration:'short', type:'div' });
+			    	return false;
+			    }
+			    
+			    
+			    //验证码验证	    
+			    if(code == ''){
+			    	mui.toast('验证码不能为空',{ duration:'short', type:'div' });
+			    	return false;
+			    }else{
+			    	var wt=plus.nativeUI.showWaiting();//等待匡
+			    	var url_code = serverUrl+"/ClientApp/checkCode";
+			    	 mui.ajax(url_code,{
+				        data:{
+				        	mobile:mobile,
+				        	code:code
+				        },
+				        dataType:'json',//服务器返回json格式数据
+				        type:'post',//HTTP请求类型 
+				        async: true,
+				        timeout:5000,//超时时间设置为5秒；                
+				        success:function(result){  
+				        	wt.close(); //关闭等待提示按钮
+				        	if(result==1){
+				        		var arr = {
+							    	'pass':pass,
+							    	'mobile':mobile
+							    };
+							    var data = JSON.stringify(arr);
+							    localStorage.setItem('userData',data);
+							    
+							    mui.openWindow({
+	                                url: 'registerUser.html',
+	                                id: 'registerUser.html',
+	                            });
+				        	}else{
+				        		mui.toast('验证码错误',{ duration:'short', type:'div' });
+				        	}
+				        },
+				        error:function(xhr,type,errorThrown){
+				        	wt.close(); //关闭等待提示按钮
+				            //异常处理；
+				            mui.toast('连接超时!请重试',{ duration:'long', type:'div' }); 
+				            console.log(type); 
+				        }
+				    });
+			    }
+			    
+			});
+			
+			});    
+		</script>
+	</body>
+
+</html>

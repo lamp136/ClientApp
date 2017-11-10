@@ -1,0 +1,172 @@
+{
+  "ios/layout/store.html": {
+    "resources": [
+      "ios/css/v.css",
+      "ios/fonts/mui.ttf",
+      "ios/css/mui.min.css",
+      "ios/fonts/v.ttf",
+      "ios/fonts/iconfont.ttf",
+      "ios/css/iconfont.css",
+      "ios/js/mui.min.js"
+    ],
+    "refer": [
+      "ios/layout/region.html",
+      "ios/layout/storeDetail.html",
+      "ios/layout/search.html"
+    ]
+  },
+  "ios/index.html": {
+    "resources": [
+      "ios/layout/store.html",
+      "ios/fonts/iconfont.ttf",
+      "ios/css/mui.min.css",
+      "ios/css/iconfont.css",
+      "ios/js/mui.min.js",
+      "ios/fonts/mui.ttf",
+      "ios/css/base.css",
+      "ios/img/icon_phone.png",
+      "ios/img/icon_close_eyes.png",
+      "ios/js/jquery-1.11.3.min.js",
+      "ios/img/bg_bank.png",
+      "ios/js/index.js",
+      "ios/img/icon_passward.png"
+    ],
+    "refer": [
+      "ios/layout/store.html",
+      "ios/layout/order.html",
+      "ios/layout/statistics.html"
+    ]
+  },
+  "ios/layout/order.html": {
+    "resources": [
+      "ios/css/mui.picker.min.css",
+      "ios/js/mui.picker.min.js",
+      "ios/css/mui.min.css",
+      "ios/css/v.css",
+      "ios/js/mui.min.js",
+      "ios/fonts/mui.ttf",
+      "ios/fonts/v.ttf",
+      "ios/fonts/iconfont.ttf",
+      "ios/css/iconfont.css"
+    ],
+    "refer": [
+      "ios/layout/region.html",
+      "ios/layout/orderDetail.html"
+    ]
+  },
+  "ios/layout/region.html": {
+    "resources": [
+      "ios/js/mui.indexedlist.js",
+      "ios/css/mui.min.css",
+      "ios/css/mui.indexedlist.css",
+      "ios/js/mui.min.js",
+      "ios/fonts/mui.ttf"
+    ]
+  },
+  "ios/layout/storeDetail.html": {
+    "resources": [
+      "ios/css/mui.min.css",
+      "ios/css/v.css",
+      "ios/js/mui.min.js",
+      "ios/fonts/mui.ttf",
+      "ios/fonts/v.ttf"
+    ]
+  },
+  "ios/layout/orderStatistics.html": {
+    "resources": [
+      "ios/css/mui.min.css",
+      "ios/css/mui.picker.min.css",
+      "ios/js/mui.min.js",
+      "ios/js/mui.picker.min.js",
+      "ios/fonts/mui.ttf"
+    ],
+    "refer": [
+      "ios/layout/orderSticDetail.html"
+    ]
+  },
+  "ios/layout/statistics.html": {
+    "refer": [
+      "ios/layout/orderStatistics.html",
+      "ios/layout/businessList.html",
+      "ios/layout/ordersamecompare.html",
+      "ios/layout/inpayList.html"
+    ],
+    "resources": [
+      "ios/css/mui.min.css",
+      "ios/css/iconfont.css",
+      "ios/js/mui.min.js",
+      "ios/fonts/iconfont.ttf"
+    ]
+  },
+  "ios/layout/orderSticDetail.html": {
+    "resources": [
+      "ios/libs/echarts-all.js",
+      "ios/css/mui.min.css",
+      "ios/js/mui.min.js",
+      "ios/fonts/mui.ttf"
+    ],
+    "refer": [
+      "ios/layout/orderDetail.html"
+    ]
+  },
+  "ios/layout/businessList.html": {
+    "resources": [
+      "ios/css/mui.min.css",
+      "ios/css/mui.picker.min.css",
+      "ios/js/mui.min.js",
+      "ios/js/mui.picker.min.js",
+      "ios/fonts/mui.ttf"
+    ],
+    "refer": [
+      "ios/layout/businessDetail.html"
+    ]
+  },
+  "ios/layout/businessDetail.html": {
+    "resources": [
+      "ios/libs/echarts-all.js",
+      "ios/css/mui.min.css",
+      "ios/js/mui.min.js",
+      "ios/fonts/mui.ttf"
+    ],
+    "refer": [
+      "ios/layout/orderDetail.html"
+    ]
+  },
+  "ios/layout/ordersamecompare.html": {
+    "resources": [
+      "ios/css/mui.min.css",
+      "ios/js/mui.min.js",
+      "ios/fonts/mui.ttf"
+    ]
+  },
+  "ios/layout/orderDetail.html": {
+    "resources": [
+      "ios/css/mui.min.css",
+      "ios/css/iconfont.css",
+      "ios/fonts/iconfont.ttf",
+      "ios/js/mui.min.js",
+      "ios/fonts/mui.ttf"
+    ]
+  },
+  "ios/layout/inpayList.html": {
+    "resources": [
+      "ios/css/mui.min.css",
+      "ios/css/mui.picker.min.css",
+      "ios/js/mui.min.js",
+      "ios/js/mui.picker.min.js",
+      "ios/fonts/mui.ttf"
+    ]
+  },
+  "ios/layout/search.html": {
+    "resources": [
+      "ios/css/mui.min.css",
+      "ios/css/iconfont.css",
+      "ios/js/mui.min.js",
+      "ios/fonts/mui.ttf",
+      "ios/fonts/iconfont.ttf"
+    ],
+    "refer": [
+      "ios/layout/storeDetail.html"
+    ]
+  }
+}

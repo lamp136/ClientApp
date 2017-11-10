@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/base.css" />
+	</head>
+	<body>
+		<div class="bg_bank">
+		    <div class="re_min_infor">
+			    <div class="re_logo" style="color:white;font-size:20px;">登 &nbsp;&nbsp;录</div>
+			    <div class="bg_color">
+                    <div class="re_min">
+                        <span class="icon_phone"></span>
+                        <input class="input01" id="account" type="text" placeholder="手机"/><div id="div1"></div>
+                    </div>
+                    <div class="re_min">
+                        <span class="icon_passwarde"></span>
+                        <input class="input01"  id="password"  type="password" placeholder="密码" />
+                        <span class="the_eyes"></span>
+                    </div>			
+                    <!--<div class="re_min">
+                        <span class="icon_vf_code"></span>
+                        <input class="input01"  class="login_btn" id="code" name="code" type="text" placeholder="请输入验证码"/>
+                        <input class="reto_code" id="btn" value="发送验证码"/>
+                    </div>-->
+                </div>
+                <div class="re_regist">
+                    <a class="btn_regist" id="login">登录</a>
+                </div>
+                <div class="re_regist02" style="width:80%;margin:0 auto;margin-top:10px;"> 	
+                    <a id="register" style="float:right">立即注册</a>
+                    <a id="reload-pass" style="float:left">忘记密码?</a>
+                </div>                
+		    </div>
+		</div>	
+		<script type="text/javascript" src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/jquery-1.11.3.min.js" ></script>
+		<script type="text/javascript" src="js/index.js" ></script>
+		
+		<script>
+		mui.init();
+		mui.plusReady(function() {
+			var cid = plus.push.getClientInfo().clientid;  //获取手机标识cid
+            //自动登录验证
+            var sessionAct = plus.storage.getItem('USER_MSG');           
+            if (sessionAct) {
+                mui.openWindow({
+                    url: 'layout/home.html',
+                    id: 'home.html',
+                });
+            }
+            function BuyId(id) {
+                return document.getElementById(id);
+            }
+            //账号长度限制
+            BuyId("account").addEventListener('input', function() {
+                var user = this.value;
+                if (user.length > 11) {
+                    this.value = user.substr(0, 11);
+                }
+            });
+
+            //登录
+            BuyId('login').addEventListener('tap', function() {
+                //为空限制
+                var account = BuyId("account").value;
+                if (account.length < 1) {
+                    mui.alert('账号不能为空');
+                    return false;
+                }
+
+                var password = BuyId("password").value;
+                if (password.length < 1) {
+                    mui.alert('密码不能为空');
+                    return false;
+                }
+
+                // 显示一个等待的对话框  
+                var wd = plus.nativeUI.showWaiting();
+
+                var account = BuyId("account").value;
+                var pass = BuyId("password").value;
+
+                var url = serverUrl + "/ClientApp/login";
+                mui.ajax(url, {
+                    data: {
+                    	cid:cid,
+                        account: account,
+                        pass: pass
+                    },
+                    dataType: 'json', //服务器返回json格式数据
+                    type: 'post', //HTTP请求类型
+                    async: true,
+                    timeout: 5000, //超时时间设置为5秒；
+                    success: function(data) {                    	
+                        wd.close(); //先关闭等待的对话框    
+                        if (data.flag == 1) {                           
+                            //自动登录标记
+                            //plus.storage.setItem('TOKEN_ACCOUNT', account);
+                            //用户信息存入缓存
+                            var msg = JSON.stringify(data.info);
+                            plus.storage.setItem('USER_MSG', msg);
+                            mui.openWindow({
+                                url: 'layout/home.html',
+                                id: 'home.html',
+                            });
+
+                            BuyId("account").value = '';
+                            BuyId("password").value = '';
+
+                        } else {
+                            mui.alert(data.msg);
+                        }
+
+                    },
+                    error: function(xhr, type, errorThrown) {
+                        wd.close(); //先关闭等待的对话框  
+                        //异常处理；
+                        console.log(type);
+                        mui.alert('连接失败,请检查你的网络!');
+                    }
+                });
+            });
+            
+            //注册
+            BuyId('register').addEventListener('tap',function(){
+            	mui.openWindow({
+            		url:'layout/register.html',
+            		id :'register.html'
+            	})
+            });                     
+            //全屏显示
+            plus.navigator.setStatusBarBackground("#07C9FB");
+        })
+		</script>
+	</body>
+	
+</html>
+
