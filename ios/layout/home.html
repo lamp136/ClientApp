@@ -45,7 +45,7 @@
 	 			font-size:18px;
 	 			padding-top:10px;
 	 		}
-	 		#msg_bottom button{
+	 		#msg_bottom button,#start_image button{
 	 			width:49%; 	
 	 			background-color: blue;
 	 			color:white;		
@@ -73,6 +73,12 @@
 	 			width:40%;
 	 			line-height:60px;
 	 		} 
+	 		#start_image{
+	 			width:70%;
+	 			background-color: white;
+	 			text-align: center;
+	 			font-size:18px;	 			
+	 		}
 	 		
 	 	</style>
 	</head>
@@ -91,6 +97,7 @@
     <!--内容开始-->
     <div class="div_map" id='allmap'> 	
     </div>
+    <!--内容结束-->
 	<!--订单提醒,弹框控件-->
 	<div id='alt' style="display:none;" order-id=''>
 		<h3 style="margin-bottom:20px;">订单提醒</h3>
@@ -126,6 +133,16 @@
 			<span id='total_km'>200KM</span>
 		</div>
 		<div id='start_trip'>出发</div>
+	</div>
+	<div id="start_image">
+		<h3 style="margin-bottom:20px;">上传里程图片</h3>
+		<ul>		
+			<li><img src="../img/photo1.png"/ width='263px' height="200px" id='startImg'></li>
+			<li>
+				<button id='start_image_remove'>取消</button>
+				<button id='start_image_commit'>提交</button>
+			</li>
+		</ul>
 	</div>
 	<!--内容结束-->
 	<!--模太框-->
@@ -232,6 +249,17 @@
 			    // 添加DOM元素到地图中  
 			    map.getContainer().appendChild(div);  
 			    // 将DOM元素返回  
+			    return div;			    
+			}
+			// 定义一个控件类 开始里程图片
+			function startImgControl(){  
+			    this.defaultAnchor = BMAP_ANCHOR_BOTTOM_LEFT;  
+			    this.defaultOffset = new BMap.Size(50, 300);			    
+			}
+			startImgControl.prototype = new BMap.Control();
+			startImgControl.prototype.initialize = function(map){ 
+				var div = BuyId('start_image');    
+			    map.getContainer().appendChild(div);  
 			    return div;			    
 			}
 			
@@ -404,7 +432,7 @@
 				
 				var url = serverUrl + "/ClientApp/upServerStatus";
 				mui.ajax(url,{
-					data:{orderId:orderId},
+					data:{orderId:orderId,status:'1'},
 					dataType:'json',
 					type:'post',
 					async: true,
@@ -426,6 +454,12 @@
 				});								
 			});
 			
+			//拒接单
+			BuyId('alt_exit').addEventListener('tap',function(){
+				BuyId('alt').style.display = "none";
+				plus.storage.removeItem("push");
+			});
+			
 			//拨打电话
 			BuyId('user_phone').addEventListener('tap',function(){
 				var push = plus.storage.getItem('push');
@@ -437,6 +471,44 @@
 						}
 					})		
 				}
+			});
+			
+			var startImgCtrl = new startImgControl();    
+			map.addControl(startImgCtrl);
+			
+			//上传开始里程图
+			BuyId('startImg').addEventListener('tap',function(){
+				var thi = this;
+				page.imgUp(thi); 				
+			});
+			//提交上传
+			BuyId('start_image_commit').addEventListener('tap',function(){
+				var server = serverUrl + "/ClientApp/upServerStatus";
+//				var push = plus.storage.getItem('push');
+				var img_url = BuyId('startImg').src;
+
+				if(1){
+//					var payObj = JSON.parse(push); 
+		            var wt=plus.nativeUI.showWaiting();
+		            var task=plus.uploader.createUpload(server,
+	                    {method:"POST"},
+	                    function(t,status){ //上传完成    
+	                        if(status==200){
+	                        	BuyId('start_image').style.display = "none";
+	                        	
+	                            wt.close(); //关闭等待提示按钮
+	                        }else{ 
+	                            mui.alert("上传失败");
+	                            wt.close();//关闭等待提示按钮
+	                        }
+	                    }
+	                );	
+	                //添加其他参数
+	                task.addData("orderId",'1');
+	                task.addData("status",'2');
+	                task.addFile(img_url,{key:"km_start_image"});
+	                task.start(); 
+				}				
 			});
 			
 			//预约车辆的信息
@@ -477,13 +549,7 @@
 					}
 				}			
 			}
-			
-			//拒接单
-			BuyId('alt_exit').addEventListener('tap',function(){
-				BuyId('alt').style.display = "none";
-				plus.storage.removeItem("push");
-			});
-															
+																					
 			// 百度地图路线功能
 			function daohang(start,end){					
 				var route = 'BMAP_DRIVING_POLICY_LEAST_DISTANCE';				
@@ -491,6 +557,45 @@
 				var driving = new BMap.DrivingRoute(map, {renderOptions:{map: map, autoViewport: true},policy: route});
 				driving.search(start,end);			
 			}
+			
+			var page=null;  
+	            page={  
+	                imgUp:function(imgObj){  
+	                    var m=this;  
+	                    plus.nativeUI.actionSheet({cancel:"取消",buttons:[  
+	                        {title:"拍照"},  
+	                        {title:"从相册中选择"}  
+	                    ]}, function(e){//1 是拍照  2 从相册中选择  
+	                        switch(e.index){  
+	                            case 1:appendByCamera(imgObj);break;  
+	                            case 2:appendByGallery(imgObj);break;  
+	                        }  
+	                    });  
+	                }  
+	                //摄像头  
+	            }  
+	              
+            // 拍照添加文件
+            function appendByCamera(imgObj){
+                plus.camera.getCamera().captureImage(function(e){
+                    console.log(e);
+                    plus.io.resolveLocalFileSystemURL(e, function(entry) { 
+                    var path = entry.toLocalURL(); 
+                    imgObj.src = path; 
+                    imgObj.setAttribute('flag','1'); //标志位标志有图片上传
+                    }, function(e) { 
+                        mui.toast("读取拍照文件错误：" + e.message); 
+                    }); 
+    
+                });    
+            }
+            // 从相册添加文件
+            function appendByGallery(imgObj){
+                plus.gallery.pick(function(path){
+                    imgObj.src = path; 
+					imgObj.setAttribute('flag','1'); //标志位标志有图片上传
+                });
+            };
 			
 		});
 	</script>
